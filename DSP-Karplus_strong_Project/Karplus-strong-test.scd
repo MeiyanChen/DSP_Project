@@ -1,24 +1,41 @@
 s.options.sampleRate_(44100);
-s.options.memSize_(2.pow(20));
+s.options.memSize = (2.pow(20));
+ServerOptions
+s.options.numBuffers
 
 
-//a simple example
-(
+//frequeny range from 130.81 - 987.77 Hz
 
-{Pluck.ar(WhiteNoise.ar(0.1), Impulse.kr(2), 440.reciprocal, 440.reciprocal, 10,
-        coef:MouseX.kr(-0.999, 0.999))
-    }.play(s)
-)
 
+//hear sound by evaluate the next two code block
 
 (
 s.waitForBoot({ // automatically create a Routine
 
-SynthDef(\KarplusS, { |out, freq = 0.1, trig = 2, pitch = 0.001|
-	var sig, env;
+SynthDef(\KarplusS, { |out, amp = 0.5, trig = 1, freq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
+	var snd, env;
 	env = EnvGen.kr(Env.perc, doneAction: Done.freeSelf);
-	sig = Pluck.ar(WhiteNoise.ar(freq), Impulse.kr(trig), 8 , pitch , 6);
-    Out.ar(out, env*sig!2)
+	snd = Pluck.ar(in:WhiteNoise.ar(amp),
+			       trig: Impulse.kr(trig),
+			       maxdelaytime:maxdelaytime ,
+			       delaytime:freq.reciprocal , //XLine.kr(freq.reciprocal,freq.lastForWhich, 0.2),
+			       decaytime: decaytime,
+			       coef:timbre,
+			       add: add
+		);
+    snd = Pan2.ar(snd,pan,amp);
+    snd = AllpassN.ar(in: snd, maxdelaytime: 2, delaytime: 0.3, decaytime: 5, mul: 3.0);
+	snd = GVerb.ar(snd, roomsize:50,
+			            revtime:3,
+			            damping:0.5,
+			            inputbw:0.27,
+			            spread:30,
+			            drylevel:0.2,
+			            earlyreflevel:0.5,
+			            taillevel:0.5);
+	snd = LeakDC.ar(snd).clip2;
+
+	Out.ar(out, snd * env);
 }).add;
 
 s.sync;
@@ -29,12 +46,21 @@ x = Synth("KarplusS");
 
 
 
+
 (
 Pbind(
 	\instrument, \KarplusS,
-	\freq,Pxrand([0.51,0.52, 0.5],inf),
-	\trig,Pseq([0.1,2],inf),
-	\scale, Scale.minorPentatonic,
-	\pitch,Pxrand([0.011,0.0113,0.0115,0.0117,0.0019,0.0015, 0.002, 0.003,0.004],inf),
-    \dur, Pxrand([2, 1,1/2,1/4, 1/8],inf),
-).play)
+	\amp,Pseq([0.5, 0.4, 0.3,],inf),
+	\trig,Pseq([0, 1],inf),   // vibrato
+	\freq,Pxrand([130.81, 146.83, 164.81, 196, 220, 261.6, 293.67, 329.63, 392, 440, 523.25, 587.33, 659.26,783.99,880],inf),
+    \dur, Pxrand([1, 1/2,1/4],inf),
+	\maxdelaytime,10,
+    \decaytime,2,
+	\add,0.04, // physical pressure change the timbre
+	\timbre,0.65 // lower number sounds more like a guitar
+).play
+
+)
+
+
+
