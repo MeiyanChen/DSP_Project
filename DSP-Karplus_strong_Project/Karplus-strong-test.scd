@@ -12,18 +12,17 @@ s.options.numBuffers
 (
 s.waitForBoot({ // automatically create a Routine
 
-SynthDef(\KarplusS, { |out, amp = 0.5, trig = 1, freq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
+SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, lastFreq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
 	var snd, env;
-	env = EnvGen.kr(Env.perc, doneAction: Done.freeSelf);
 	snd = Pluck.ar(in:WhiteNoise.ar(amp),
-			       trig: Impulse.kr(trig),
+			       trig: t_trig,
 			       maxdelaytime:maxdelaytime ,
-			       delaytime:freq.reciprocal , //XLine.kr(freq.reciprocal,freq.lastForWhich, 0.2),
+			       delaytime:Lag.kr(freq.reciprocal, 2) , //XLine.kr(freq.reciprocal,freq.lastForWhich, 0.2),
 			       decaytime: decaytime,
 			       coef:timbre,
 			       add: add
 		);
-    snd = Pan2.ar(snd,pan,amp);
+    snd = Pan2.ar(snd,pan);
     snd = AllpassN.ar(in: snd, maxdelaytime: 2, delaytime: 0.3, decaytime: 5, mul: 3.0);
 	snd = GVerb.ar(snd, roomsize:50,
 			            revtime:3,
@@ -35,12 +34,14 @@ SynthDef(\KarplusS, { |out, amp = 0.5, trig = 1, freq = 440, maxdelaytime = 0.2 
 			            taillevel:0.5);
 	snd = LeakDC.ar(snd).clip2;
 
-	Out.ar(out, snd * env);
+		lastFreq.poll;
+
+	Out.ar(out, snd);
 }).add;
 
 s.sync;
 
-x = Synth("KarplusS");
+// x = Synth("KarplusS");
 })
 )
 
@@ -48,12 +49,12 @@ x = Synth("KarplusS");
 
 
 (
-Pbind(
-	\instrument, \KarplusS,
+Pmono(
+	\KarplusS,
 	\amp,Pseq([0.5, 0.4, 0.3,],inf),
-	\trig,Pseq([0, 1],inf),   // vibrato
+	\t_trig, 1,   // vibrato
 	\freq,Pxrand([130.81, 146.83, 164.81, 196, 220, 261.6, 293.67, 329.63, 392, 440, 523.25, 587.33, 659.26,783.99,880],inf),
-    \dur, Pxrand([1, 1/2,1/4],inf),
+    \dur, Pxrand([1, 1/2,1/4, 4],inf),
 	\maxdelaytime,10,
     \decaytime,2,
 	\add,0.04, // physical pressure change the timbre
@@ -62,5 +63,6 @@ Pbind(
 
 )
 
+s.nodeTree
 
 
