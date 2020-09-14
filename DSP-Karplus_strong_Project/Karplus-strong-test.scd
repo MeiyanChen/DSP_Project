@@ -12,7 +12,7 @@ s.options.numBuffers
 (
 s.waitForBoot({ // automatically create a Routine
 
-SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, lastFreq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
+SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
 	var snd, env;
 	snd = Pluck.ar(in:WhiteNoise.ar(amp),
 			       trig: t_trig,
@@ -33,8 +33,6 @@ SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, lastFreq = 440, max
 			            earlyreflevel:0.5,
 			            taillevel:0.5);
 	snd = LeakDC.ar(snd).clip2;
-
-		lastFreq.poll;
 
 	Out.ar(out, snd);
 }).add;
