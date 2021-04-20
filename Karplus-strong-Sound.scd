@@ -3,21 +3,46 @@ s.options.memSize = (2.pow(20));
 ServerOptions
 s.options.numBuffers
 
+( // create Control Busses
+c = Bus.control(s, 1); // X from 0 to 1
+d = Bus.control(s, 1); // Y from 0 to 1
+e = Bus.control(s, 1); // Writing (1) or not Writing (0)
+)
+
+(
+{
+	Out.kr(c, ~val[0]);
+	Out.kr(d, ~val[1]);
+	Out.kr(e, ~val[2]);
+}.play;
+)
+
+
 
 //frequeny range from 130.81 - 987.77 Hz
 
+
+(
+    {Pluck.ar(WhiteNoise.ar(0.5), Impulse.kr(2), 440.reciprocal, 440.reciprocal, 10,
+        coef:-0.5)
+    }.play(s)
+)
+
+
+// delayTime is controlling the pitch here. The delay time is reciprocal to the pitch. // 1/100th of a sec is 100Hz, 1/400th of a sec is 400Hz.
 
 //hear sound by evaluate the next two code block
 
 (
 s.waitForBoot({ // automatically create a Routine
 
-SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, maxdelaytime = 0.2 , decaytime = 0.2 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
+SynthDef(\KarplusS, { |out, amp = 0.1, t_trig=1, pitch = 69, maxdelaytime = 0.2 , decaytime = 10 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
 	var snd, env;
 	snd = Pluck.ar(in:WhiteNoise.ar(amp),
 			       trig: t_trig,
 			       maxdelaytime:maxdelaytime ,
-			       delaytime:Lag.kr(freq.reciprocal, 2) , //XLine.kr(freq.reciprocal,freq.lastForWhich, 0.2),
+			       //delaytime:Lag.kr(pitch.midicps.reciprocal, 2) , //XLine.kr(freq.reciprocal,freq.lastForWhich, 0.2),
+			       delaytime:pitch.midicps.reciprocal,
 			       decaytime: decaytime,
 			       coef:timbre,
 			       add: add
@@ -39,10 +64,29 @@ SynthDef(\KarplusS, { |out, amp = 0.5, t_trig=0, freq = 440, maxdelaytime = 0.2 
 
 s.sync;
 
-// x = Synth("KarplusS");
 })
 )
 
+x = Synth(\KarplusS);
+x.set(\pitch, 60);
+
+(
+Pmono(
+	\KarplusS,
+	\pitch,Pseq([60, 62, 64, 65, 67, 69])
+).play;
+
+)
+// ~val[0].linexp(0, 65535, 49, 89)]
+
+(
+~control = Routine.new({
+	{
+		(instrument: \KarplusS, \pitch: [69, 71]).play;
+		0.1.wait;
+	}.loop;
+}).play
+)
 
 
 
@@ -60,6 +104,14 @@ Pmono(
 ).play
 
 )
+
+
+
+
+s.quit
+s.stop
+
+{ SinOsc.ar(~val[0].linexp(0, 65535, 100, 1000), 0, 0.5) }.play;
 
 s.nodeTree
 
