@@ -1,33 +1,14 @@
+
+
 s.options.sampleRate_(44100);
 s.options.memSize = (2.pow(20));
-ServerOptions
-s.options.numBuffers
-
-( // create Control Busses
-c = Bus.control(s, 1); // X from 0 to 1
-d = Bus.control(s, 1); // Y from 0 to 1
-e = Bus.control(s, 1); // Writing (1) or not Writing (0)
-)
-
-(
-{
-	Out.kr(c, ~val[0]);
-	Out.kr(d, ~val[1]);
-	Out.kr(e, ~val[2]);
-}.play;
-)
+s.boot;
+//ServerOptions
+//s.options.numBuffers
 
 
 
-//frequeny range from 130.81 - 987.77 Hz
-
-
-(
-    {Pluck.ar(WhiteNoise.ar(0.5), Impulse.kr(2), 440.reciprocal, 440.reciprocal, 10,
-        coef:-0.5)
-    }.play(s)
-)
-
+//frequeny range from 130.81 - 987.77 Hz 49 -84
 
 // delayTime is controlling the pitch here. The delay time is reciprocal to the pitch. // 1/100th of a sec is 100Hz, 1/400th of a sec is 400Hz.
 

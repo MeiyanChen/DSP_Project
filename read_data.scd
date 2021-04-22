@@ -1,12 +1,16 @@
+//////////step 3 --------- make a connection to arduino uno with supercollider/////////////////////////////////////////
+
 (
-SerialPort.devices;
-~port = SerialPort.new("/dev/cu.usbmodem1431201", 9600);
+SerialPort.devices; // detect the device name
+~port = SerialPort.new("/dev/cu.usbmodem1431401", 9600); // modifiy the device name to connect to arduino
 ~val = [];
 ~xyz = [];
 ~charArray = [];
 
 )
 
+
+/////////step 4 --------- convert arduino data to interger to control sound from sensor ///////////////////////////////
 (
 ~zLayer = 15000;
 ~zLayerOff = 24000;
@@ -43,7 +47,7 @@ SerialPort.devices;
 				((~val[2] < ~zLayer) && ~plucked.not).if ({
 					"pluck".postln;
 					~plucked = true;
-					~pitch = ~val[0].linlin(14000, 65000, 36, 36 + (12 *4)).floor;
+					~pitch = ~val[0].linlin(14000, 65000, 49, 49 + (12 *3)).floor.postln;
 
 					~sound.set(\pitch, ~pitch); ~sound.set(\t_trig, 1);
 
@@ -53,7 +57,7 @@ SerialPort.devices;
 					~plucked = false;
 				});
 
-				" ".postln;
+				"--------- ".postln;
 
 			});
 		}
@@ -61,8 +65,12 @@ SerialPort.devices;
 }).play;
 )
 
-~getValues.stop;
+////////////step 5 --------  ready to play on sensor //////////////////////////////////////////////////////////////////
 
+~getValues.stop; //it can stop receiving data, otherwise use Command + "." (period.) to stop the server running synth and routine
+
+
+/*
 ~val[0].postln; // ~val[0] ->x , ~val[1] ->y, ~val[2] ->z
 
 

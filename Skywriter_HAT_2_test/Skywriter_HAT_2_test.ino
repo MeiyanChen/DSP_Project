@@ -21,5 +21,5 @@ void handle_xyz(unsigned int x, unsigned int y, unsigned int z){
  char buf[17];
  sprintf(buf, "%05u:%05u:%05u", x, y, z);  //
  Serial.println(buf);
- delay(100);
+ delay(0.01);
 }
