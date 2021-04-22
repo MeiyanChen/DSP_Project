@@ -47,7 +47,7 @@ SerialPort.devices; // detect the device name
 				((~val[2] < ~zLayer) && ~plucked.not).if ({
 					"pluck".postln;
 					~plucked = true;
-					~pitch = ~val[0].linlin(14000, 65000, 49, 49 + (12 *3)).floor.postln;
+					~pitch = ~val[0].linlin(0, 65000, 49, 49 + (12 *3)).floor.postln;
 
 					~sound.set(\pitch, ~pitch); ~sound.set(\t_trig, 1);
 

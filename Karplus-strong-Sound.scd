@@ -1,23 +1,23 @@
-
+///////////////////step 1 ------- set the memory size for supercollider and then boot the server//////////////////////
 
 s.options.sampleRate_(44100);
 s.options.memSize = (2.pow(20));
-s.boot;
+s.boot; //or use" command + b "
 //ServerOptions
 //s.options.numBuffers
 
 
 
-//frequeny range from 130.81 - 987.77 Hz 49 -84
+//frequeny range from 130.81 - 987.77 Hz (49 -84 midi)
 
 // delayTime is controlling the pitch here. The delay time is reciprocal to the pitch. // 1/100th of a sec is 100Hz, 1/400th of a sec is 400Hz.
 
-//hear sound by evaluate the next two code block
 
+//////////////////step 2-------- evaluate synthdef to have sound//////////////////////////////////////////////////////
 (
 s.waitForBoot({ // automatically create a Routine
 
-SynthDef(\KarplusS, { |out, amp = 0.1, t_trig=1, pitch = 69, maxdelaytime = 0.2 , decaytime = 10 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
+SynthDef(\KarplusS, { |out, amp = 0.1, t_trig=1, pitch = 69, maxdelaytime = 0.2 , decaytime = 5 ,delaytime = 1, pan = 0,  add= 0.04, timbre = 0.5|
 	var snd, env;
 	snd = Pluck.ar(in:WhiteNoise.ar(amp),
 			       trig: t_trig,
@@ -48,6 +48,8 @@ s.sync;
 })
 )
 
+
+/*
 x = Synth(\KarplusS);
 x.set(\pitch, 60);
 
