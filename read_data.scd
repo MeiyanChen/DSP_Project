@@ -44,16 +44,16 @@ SerialPort.devices; // detect the device name
 
 				// ~val.postln; // here it has the value of each message sent from arduino as an array [x,y,z]
 				// y and z seem to work fine, x starts somewhere around 14000 and ends at 65000 around the middle of the sensor sometimes. 65535 is the maximum for 16bits, which seems to be the maximum for the Arduino Uno
-				((~val[2] < ~zLayer) && ~plucked.not).if ({
+				((~val[2] <= ~zLayer) && ~plucked.not).if ({
 					"pluck".postln;
 					~plucked = true;
-					~pitch = ~val[0].linlin(0, 65000, 49, 49 + (12 *3)).floor.postln;
+					~pitch = ~val[0].linlin(0, 65000, 48, 48 + (12 *3)).floor.postln;
 
 					~sound.set(\pitch, ~pitch); ~sound.set(\t_trig, 1);
 
 				});
 
-				((~val[2] > ~zLayerOff) && ~plucked).if ({
+				((~val[2] >= ~zLayerOff) && ~plucked).if ({
 					~plucked = false;
 				});
 

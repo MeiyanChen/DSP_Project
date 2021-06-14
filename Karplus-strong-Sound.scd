@@ -8,7 +8,7 @@ s.boot; //or use" command + b "
 
 
 
-//frequeny range from 130.81 - 987.77 Hz (49 -84 midi)
+//frequency range from 130.81 - 987.77 Hz (49 -84 midi)
 
 // delayTime is controlling the pitch here. The delay time is reciprocal to the pitch. // 1/100th of a sec is 100Hz, 1/400th of a sec is 400Hz.
 
